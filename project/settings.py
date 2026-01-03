@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-)91m2qapg)v0fi#bub4k3zepcb8wtcke(crs760g&-7l-gc=7l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['memes-generator-w7b8.onrender.com']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "memes-l4th.onrender.com",
+    "memes-generator-w7b8.onrender.com",
+]
 
 
 # Application definition
