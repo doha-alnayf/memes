@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    ...
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator - Create & Share Amazing Memes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary sticky-top shadow-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold fs-3" href="#">
+                <i class="fas fa-face-laugh-beam me-2"></i>
+                Meme Generator
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="homeBtn"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" id="aboutBtn"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row g-4">
+            <!-- Left Sidebar - Tools -->
+            <div class="col-lg-3">
+                <div class="card shadow-lg border-0 sticky-panel">
+                    <div class="card-header bg-gradient-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Editing Tools</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Upload Section -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Image
+                            </label>
+                            <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary w-100" id="sampleImageBtn">
+                                    <i class="fas fa-image me-1"></i>Use Sample Image
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tabs for Text -->
+                        <ul class="nav nav-pills mb-3" id="toolTabs" role="tablist">
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link active w-100" id="text-tab" data-bs-toggle="pill" data-bs-target="#text-panel" type="button">
+                                    <i class="fas fa-font"></i> Text
+                                </button>
+
+<div class="tab-content" id="toolTabsContent">
+                            <!-- Text Controls -->
+                            <div class="tab-pane fade show active" id="text-panel">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Text Content</label>
+                                    <input type="text" class="form-control" id="textInput" placeholder="Enter your text...">
+                                </div>
+                                <div class="mb-3">
+                                    <button class="btn btn-success w-100" id="addTextBtn">
+                                        <i class="fas fa-plus-circle me-2"></i>Add Text
+                                    </button>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Font Size</label>
+                                    <input type="range" class="form-range" id="fontSize" min="20" max="100" value="40">
+                                    <div class="text-center mt-1">
+                                        <span class="badge bg-primary" id="fontSizeValue">40px</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Text Color</label>
+                                    <input type="color" class="form-control form-control-color w-100" id="textColor" value="#ffffff">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Stroke Color</label>
+                                    <input type="color" class="form-control form-control-color w-100" id="strokeColor" value="#000000">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Stroke Width</label>
+                                    <input type="range" class="form-range" id="strokeWidth" min="0" max="10" value="3">
+                                    <div class="text-center mt-1">
+                                        <span class="badge bg-primary" id="strokeWidthValue">3px</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <button class="btn btn-danger w-100" id="deleteTextBtn">
+                                        <i class="fas fa-trash me-2"></i>Delete Selected
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <hr>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-lg btn-success" id="downloadBtn">
+                                <i class="fas fa-download me-2"></i>Download Meme
+                            </button>
+                            <button class="btn btn-lg btn-info text-white" id="shareBtn">
+                                <i class="fas fa-share-alt me-2"></i>Share
+                            </button>
+                            <button class="btn btn-lg btn-outline-danger" id="clearAllBtn">
+                                <i class="fas fa-redo me-2"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center - Canvas Area -->
+            <div class="col-lg-9">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-gradient-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Canvas</h5>
+                    </div>
+                    <div class="card-body text-center bg-light">
+
+<div id="canvasContainer" class="position-relative d-inline-block">
+
+                    <canvas id="memeCanvas" width="800" height="600"></canvas>
+
+                    <!-- هنا سيتم إنشاء النصوص بشكل ديناميكي -->
+                    <div id="textsLayer"></div>
+
+                    <div class="mt-3 text-muted" id="emptyState">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                        <p class="fs-5">Upload an image to start creating your meme!</p>
+                    </div>
+
+                </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-share-alt me-2"></i>Share Your Meme</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center mb-3">Share your amazing creation!</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg" onclick="shareOn('facebook')">
+                            <i class="fab fa-facebook me-2"></i>Share on Facebook
+                        </button>
+                        <button class="btn btn-info btn-lg text-white" onclick="shareOn('twitter')">
+                            <i class="fab fa-twitter me-2"></i>Share on Twitter
+                        </button>
+                        <button class="btn btn-danger btn-lg" onclick="shareOn('pinterest')">
+                            <i class="fab fa-pinterest me-2"></i>Share on Pinterest
+                        </button>
+                        <button class="btn btn-success btn-lg" id="copyLinkBtn">
+                            <i class="fas fa-link me-2"></i>Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <!-- Sample Images Modal -->
+<div class="modal fade" id="sampleImagesModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-gradient-primary text-white">
+        <h5 class="modal-title">Choose a Sample Image</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-wrap justify-content-center gap-2">
+        <!-- صور نموذجية -->
+        <img src="/static/images/sample.jpg" class="sample-img" style="width:150px;cursor:pointer;">
+        <img src="/static/images/sample2.jpg" class="sample-img" style="width:150px;cursor:pointer;">
+        <img src="/static/images/sample3.jpg" class="sample-img" style="width:150px;cursor:pointer;">
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-2"><i class="fas fa-face-laugh-beam me-2"></i>Meme Generator - Create Amazing Memes</p>
+            <p class="mb-0">&copy; 2025 All Rights Reserved to Hala and Doha and Maya</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="app.js"></script> -->
+
+    <div id="notification" class="notification">
+  تم حفظ الصورة بنجاح
+</div>
+
+    <!-- <script src="{% static 'js/app.js' %}"></script> -->
+
+
+<script src="{% static 'js/app.js' %}"></script>
+
+
+</body>
+</html>
