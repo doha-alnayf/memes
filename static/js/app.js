@@ -17,18 +17,35 @@ document.getElementById("shareBtn").addEventListener("click", () => {
     shareModal.show();
 });
 
+
 //COPY LINK BUTTON
     // ============================
-    document.getElementById("copyLinkBtn").addEventListener("click", async () => {
-        const imageUrl = await uploadMemeToServer();
-        if (!imageUrl) return;
+document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+    const imageUrl = await uploadMemeToServer();
+    if (!imageUrl) return;
 
-        try {
+    try {
+        // الطريقة الحديثة (تعمل فقط على HTTPS)
+        if (navigator.clipboard && window.isSecureContext) {
             await navigator.clipboard.writeText(imageUrl);
-            showNotification("Link copied !");
-        } catch {
-            alert("Failed to copy link.");
+            showNotification("Link copied!");
+            return;
         }
+
+        // Fallback للمتصفحات القديمة / HTTP
+        const tempInput = document.createElement("input");
+        tempInput.value = imageUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        tempInput.remove();
+
+        showNotification("Link copied!");
+        
+    } catch (err) {
+        console.error("Copy failed:", err);
+        alert("Failed to copy link.");
+    }
 });
 
 // زر استخدام صورة نموذجية
@@ -146,7 +163,118 @@ function drawImageToCanvas() {
 //========================
 //  TEXT LAYER & ADDING TEXT
 // ============================
+// const textInput = document.getElementById("textInput");
+// const addTextBtn = document.getElementById("addTextBtn");
+// const textsLayer = document.getElementById("textsLayer");
+// const canvasContainer = document.getElementById("canvasContainer");
+
+// addTextBtn.addEventListener("click", () => {
+
+//     // ✅ تحقق إذا لم يتم رفع صورة
+//     if (!image) {
+//         alert("You need to upload an image first !");
+//         return;
+//     }
+
+//     const textValue = textInput.value.trim();
+//     if (!textValue) return;
+
+//     // إذا كان هناك نص محدد، حدث محتواه فقط
+//     if (selectedText) {
+//         selectedText.textContent = textValue;
+//         applyTextStylesTo(selectedText);
+//     } else {
+//         // إنشاء نص جديد
+//         const div = document.createElement("div");
+//         div.classList.add("draggable-text");
+//         div.textContent = textValue;
+
+//         div.style.position = "absolute";
+//         div.style.left = "50%";
+//         div.style.top = "50%";
+//         div.style.transform = "translate(-50%, -50%)";
+//         div.style.cursor = "move";
+
+//         textsLayer.appendChild(div);
+
+//         applyTextStylesTo(div);
+//         enableDrag(div);
+
+//         // عند الضغط على النص لتعديله
+//         div.addEventListener("click", (e) => {
+//             e.stopPropagation();
+
+//             // إزالة التحديد عن بقية النصوص
+//             document.querySelectorAll(".draggable-text")
+//                     .forEach(el => el.style.outline = "none");
+
+//             selectedText = div;
+//             div.style.outline = "2px dashed red";
+
+//             // عرض النص في الـ input لتعديله
+//             textInput.value = div.textContent;
+//         });
+//     }
+
+//     // مسح الحقل بعد الإضافة أو التعديل
+//     textInput.value = "";
+// });
+
+// عند النقر في أي مكان على الصورة أو الـ canvasContainer، يتم إلغاء التحديد
+// canvasContainer.addEventListener("click", () => {
+//     document.querySelectorAll(".draggable-text")
+//             .forEach(el => el.style.outline = "none");
+//     selectedText = null;
+//     textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
+// });
+
+
+
+
+
+// ============================
+//  DRAGGING TEXT
+// ============================
+// function enableDrag(el) {
+//     let isDragging = false, offsetX = 0, offsetY = 0;
+
+//     el.addEventListener("mousedown", (e) => {
+//         isDragging = true;
+//         offsetX = e.offsetX;
+//         offsetY = e.offsetY;
+//     });
+
+//     document.addEventListener("mousemove", (e) => {
+//         if (!isDragging) return;
+
+//         const rect = canvasContainer.getBoundingClientRect();
+//         el.style.left = (e.clientX - rect.left - offsetX) + "px";
+//         el.style.top  = (e.clientY - rect.top - offsetY) + "px";
+//     });
+
+//     document.addEventListener("mouseup", () => isDragging = false);
+// }
+
+
+
+
+
+
+
+// ============================
+//  TEXT STYLE CONTROLS
+// ============================
+
+
+//========================
+//  TEXT LAYER & ADDING TEXT
+// ============================
+
+
+
 const textInput = document.getElementById("textInput");
+// ============new update================
+
 const addTextBtn = document.getElementById("addTextBtn");
 const textsLayer = document.getElementById("textsLayer");
 const canvasContainer = document.getElementById("canvasContainer");
@@ -155,7 +283,7 @@ addTextBtn.addEventListener("click", () => {
 
     // ✅ تحقق إذا لم يتم رفع صورة
     if (!image) {
-        alert("You need to upload an image first !");
+        alert("يرجى رفع صورة أولاً قبل إضافة النص!");
         return;
     }
 
@@ -182,7 +310,7 @@ addTextBtn.addEventListener("click", () => {
 
         applyTextStylesTo(div);
         enableDrag(div);
-
+        /*على لابتوب*/ 
         // عند الضغط على النص لتعديله
         div.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -196,13 +324,28 @@ addTextBtn.addEventListener("click", () => {
 
             // عرض النص في الـ input لتعديله
             textInput.value = div.textContent;
+      /**على الهاتف  */
+            // عند الضغط على النص لتعديله
+            div.addEventListener("touchstart", (e) => {
+            e.stopPropagation();
+
+            // إزالة التحديد عن بقية النصوص
+            document.querySelectorAll(".draggable-text")
+                    .forEach(el => el.style.outline = "none");
+
+            selectedText = div;
+            div.style.outline = "2px dashed red";
+
+            // عرض النص في الـ input لتعديله
+            textInput.value = div.textContent;
         });
-    }
+    });
+   }
 
     // مسح الحقل بعد الإضافة أو التعديل
     textInput.value = "";
 });
-
+/**على لابتوب */
 // عند النقر في أي مكان على الصورة أو الـ canvasContainer، يتم إلغاء التحديد
 canvasContainer.addEventListener("click", () => {
     document.querySelectorAll(".draggable-text")
@@ -210,9 +353,13 @@ canvasContainer.addEventListener("click", () => {
     selectedText = null;
     textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
 });
-
-
-
+/**على الهاتف */
+canvasContainer.addEventListener("touchstart", () => {
+    document.querySelectorAll(".draggable-text")
+            .forEach(el => el.style.outline = "none");
+    selectedText = null;
+    textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
+});
 
 
 // ============================
@@ -221,6 +368,7 @@ canvasContainer.addEventListener("click", () => {
 function enableDrag(el) {
     let isDragging = false, offsetX = 0, offsetY = 0;
 
+    // ==== Mouse Events ====
     el.addEventListener("mousedown", (e) => {
         isDragging = true;
         offsetX = e.offsetX;
@@ -229,19 +377,37 @@ function enableDrag(el) {
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-
         const rect = canvasContainer.getBoundingClientRect();
         el.style.left = (e.clientX - rect.left - offsetX) + "px";
         el.style.top  = (e.clientY - rect.top - offsetY) + "px";
     });
 
     document.addEventListener("mouseup", () => isDragging = false);
+
+    // ==== Touch Events ====
+    el.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        const touch = e.touches[0];
+        const rect = el.getBoundingClientRect();
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+        e.preventDefault(); // يمنع السحب الافتراضي للصفحة
+    }, { passive: false });
+
+    document.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        const rect = canvasContainer.getBoundingClientRect();
+        el.style.left = (touch.clientX - rect.left - offsetX) + "px";
+        el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
+        e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener("touchend", () => isDragging = false);
 }
 
+// ============new update================
 
-// ============================
-//  TEXT STYLE CONTROLS
-// ============================
 const fontSize = document.getElementById("fontSize");
 const fontSizeValue = document.getElementById("fontSizeValue");
 
