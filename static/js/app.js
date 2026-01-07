@@ -47,7 +47,6 @@ document.getElementById("shareBtn").addEventListener("click", () => {
 //         alert("Failed to copy link.");
 //     }
 // });
-
 // COPY LINK BUTTON
 // ============================
 document.getElementById("copyLinkBtn").addEventListener("click", async () => {
@@ -55,7 +54,7 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
     const imageUrl = await uploadMemeToServer();
     if (!imageUrl) return;
 
-    // الطريقة الحديثة (HTTPS + أذونات)
+    // الطريقة الحديثة
     try {
         await navigator.clipboard.writeText(imageUrl);
         showNotification("Link copied!");
@@ -64,7 +63,7 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
         console.warn("Clipboard API failed, using fallback...", err);
     }
 
-    // Fallback — يعمل على HTTP والمتصفحات القديمة
+    // fallback المتوافق مع كل المتصفحات
     try {
         const tempInput = document.createElement("input");
         tempInput.value = imageUrl;
@@ -73,15 +72,12 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
         tempInput.select();
         tempInput.setSelectionRange(0, 99999);
 
-        const result = document.execCommand("copy");
+        document.execCommand("copy");   // لا نعتمد على return value
+
         document.body.removeChild(tempInput);
 
-        if (result) {
-            showNotification("Link copied!");
-        } else {
-            alert("Failed to copy link.");
-        }
-
+        // إذا لم يقع خطأ → نعتبر النسخ ناجحًا
+        showNotification("Link copied!");
     } catch {
         alert("Failed to copy link.");
     }
