@@ -118,8 +118,14 @@
                             <button class="btn btn-lg btn-success" id="downloadBtn">
                                 <i class="fas fa-download me-2"></i>Download Meme
                             </button>
-                            <button class="btn btn-lg btn-info text-white" id="shareBtn">
+                            <!-- <button class="btn btn-lg btn-info text-white" id="shareBtn">
                                 <i class="fas fa-share-alt me-2"></i>Share
+                            </button> -->
+                            <button type="button"
+                                class="btn btn-lg btn-info text-white"
+                                id="shareBtn"
+                                onclick="openShareModal(event)">
+                              <i class="fas fa-share-alt me-2"></i>Share
                             </button>
                             <button class="btn btn-lg btn-outline-danger" id="clearAllBtn">
                                 <i class="fas fa-redo me-2"></i>Clear All
@@ -137,7 +143,7 @@
                     </div>
                     <div class="card-body text-center bg-light">
 
-<div id="canvasContainer" class="position-relative d-inline-block">
+                    <div id="canvasContainer" class="position-relative d-inline-block">
 
                     <canvas id="memeCanvas" width="800" height="600"></canvas>
 
@@ -223,12 +229,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <div id="notification" class="notification">
-  تم حفظ الصورة بنجاح
-</div>
-
-
 
 <script src="{% static 'js/app.js' %}"></script>
 

@@ -301,7 +301,7 @@ function saveMeme() {
 //تحميل الصورة
   const link = document.createElement("a");
       if (!image) {
-        alert("ارفع صورة أولاً");
+        alert("You need to upload an image first !");
         return null;
     }
   link.download = "meme.png";
@@ -357,7 +357,7 @@ function drawTextsOnCanvasTemporarily() {
 // رفع الميم للسيرفر
 async function uploadMemeToServer() {
     if (!image) {
-        alert("ارفع صورة أولاً");
+        alert(" You need to upload an image first !");
         return null;
     }
 
@@ -419,6 +419,30 @@ const imageUrl = await uploadMemeToServer();
 
         window.open(shareUrl, "_blank");
 }; 
+
+ // فتح مودال المشاركة
+window.openShareModal = function (event) {
+
+    // أوقف كل الأحداث تماماً
+    if (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+    }
+
+    // تحقق من وجود صورة قبل أي شيء
+    if (!image) {
+        alert("Please upload an image first");
+        return;
+    }
+
+    // افتح المودال فقط إذا كانت هناك صورة
+    const shareModal = document.getElementById("shareModal");
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(shareModal);
+    modalInstance.show();
+};
+
+
 
 //الذهاب إلى الأعلى والأسفل بسلاسة
 
