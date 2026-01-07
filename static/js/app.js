@@ -163,118 +163,7 @@ function drawImageToCanvas() {
 //========================
 //  TEXT LAYER & ADDING TEXT
 // ============================
-// const textInput = document.getElementById("textInput");
-// const addTextBtn = document.getElementById("addTextBtn");
-// const textsLayer = document.getElementById("textsLayer");
-// const canvasContainer = document.getElementById("canvasContainer");
-
-// addTextBtn.addEventListener("click", () => {
-
-//     // ✅ تحقق إذا لم يتم رفع صورة
-//     if (!image) {
-//         alert("You need to upload an image first !");
-//         return;
-//     }
-
-//     const textValue = textInput.value.trim();
-//     if (!textValue) return;
-
-//     // إذا كان هناك نص محدد، حدث محتواه فقط
-//     if (selectedText) {
-//         selectedText.textContent = textValue;
-//         applyTextStylesTo(selectedText);
-//     } else {
-//         // إنشاء نص جديد
-//         const div = document.createElement("div");
-//         div.classList.add("draggable-text");
-//         div.textContent = textValue;
-
-//         div.style.position = "absolute";
-//         div.style.left = "50%";
-//         div.style.top = "50%";
-//         div.style.transform = "translate(-50%, -50%)";
-//         div.style.cursor = "move";
-
-//         textsLayer.appendChild(div);
-
-//         applyTextStylesTo(div);
-//         enableDrag(div);
-
-//         // عند الضغط على النص لتعديله
-//         div.addEventListener("click", (e) => {
-//             e.stopPropagation();
-
-//             // إزالة التحديد عن بقية النصوص
-//             document.querySelectorAll(".draggable-text")
-//                     .forEach(el => el.style.outline = "none");
-
-//             selectedText = div;
-//             div.style.outline = "2px dashed red";
-
-//             // عرض النص في الـ input لتعديله
-//             textInput.value = div.textContent;
-//         });
-//     }
-
-//     // مسح الحقل بعد الإضافة أو التعديل
-//     textInput.value = "";
-// });
-
-// عند النقر في أي مكان على الصورة أو الـ canvasContainer، يتم إلغاء التحديد
-// canvasContainer.addEventListener("click", () => {
-//     document.querySelectorAll(".draggable-text")
-//             .forEach(el => el.style.outline = "none");
-//     selectedText = null;
-//     textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
-// });
-
-
-
-
-
-// ============================
-//  DRAGGING TEXT
-// ============================
-// function enableDrag(el) {
-//     let isDragging = false, offsetX = 0, offsetY = 0;
-
-//     el.addEventListener("mousedown", (e) => {
-//         isDragging = true;
-//         offsetX = e.offsetX;
-//         offsetY = e.offsetY;
-//     });
-
-//     document.addEventListener("mousemove", (e) => {
-//         if (!isDragging) return;
-
-//         const rect = canvasContainer.getBoundingClientRect();
-//         el.style.left = (e.clientX - rect.left - offsetX) + "px";
-//         el.style.top  = (e.clientY - rect.top - offsetY) + "px";
-//     });
-
-//     document.addEventListener("mouseup", () => isDragging = false);
-// }
-
-
-
-
-
-
-
-// ============================
-//  TEXT STYLE CONTROLS
-// ============================
-
-
-//========================
-//  TEXT LAYER & ADDING TEXT
-// ============================
-
-
-
 const textInput = document.getElementById("textInput");
-// ============new update================
-
 const addTextBtn = document.getElementById("addTextBtn");
 const textsLayer = document.getElementById("textsLayer");
 const canvasContainer = document.getElementById("canvasContainer");
@@ -283,7 +172,7 @@ addTextBtn.addEventListener("click", () => {
 
     // ✅ تحقق إذا لم يتم رفع صورة
     if (!image) {
-        alert("يرجى رفع صورة أولاً قبل إضافة النص!");
+        alert("You need to upload an image first !");
         return;
     }
 
@@ -310,7 +199,7 @@ addTextBtn.addEventListener("click", () => {
 
         applyTextStylesTo(div);
         enableDrag(div);
-        /*على لابتوب*/ 
+
         // عند الضغط على النص لتعديله
         div.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -324,28 +213,13 @@ addTextBtn.addEventListener("click", () => {
 
             // عرض النص في الـ input لتعديله
             textInput.value = div.textContent;
-      /**على الهاتف  */
-            // عند الضغط على النص لتعديله
-            div.addEventListener("touchstart", (e) => {
-            e.stopPropagation();
-
-            // إزالة التحديد عن بقية النصوص
-            document.querySelectorAll(".draggable-text")
-                    .forEach(el => el.style.outline = "none");
-
-            selectedText = div;
-            div.style.outline = "2px dashed red";
-
-            // عرض النص في الـ input لتعديله
-            textInput.value = div.textContent;
         });
-    });
-   }
+    }
 
     // مسح الحقل بعد الإضافة أو التعديل
     textInput.value = "";
 });
-/**على لابتوب */
+
 // عند النقر في أي مكان على الصورة أو الـ canvasContainer، يتم إلغاء التحديد
 canvasContainer.addEventListener("click", () => {
     document.querySelectorAll(".draggable-text")
@@ -353,60 +227,108 @@ canvasContainer.addEventListener("click", () => {
     selectedText = null;
     textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
 });
-/**على الهاتف */
-canvasContainer.addEventListener("touchstart", () => {
-    document.querySelectorAll(".draggable-text")
-            .forEach(el => el.style.outline = "none");
-    selectedText = null;
-    textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
-});
+
+
+
 
 
 // ============================
 //  DRAGGING TEXT
 // ============================
 function enableDrag(el) {
-    let isDragging = false, offsetX = 0, offsetY = 0;
+    let isDragging = false;
+    let grabDX = 0, grabDY = 0;
+    let startX = 0, startY = 0;
+    let moved = false;
 
-    // ==== Mouse Events ====
-    el.addEventListener("mousedown", (e) => {
+    function startPointer(clientX, clientY) {
         isDragging = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
+        moved = false;
+
+        startX = clientX;
+        startY = clientY;
+
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        grabDX = clientX - cx;
+        grabDY = clientY - cy;
+    }
+
+    function movePointer(clientX, clientY) {
+        if (!isDragging) return;
+
+        // إذا كان التحرك بسيطًا لا نعتبره سحبًا بل ضغط فقط
+        if (!moved && (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3)) {
+            moved = true;
+        }
+
+        if (!moved) return;
+
+        const rect = canvasContainer.getBoundingClientRect();
+        const x = clientX - rect.left - grabDX;
+        const y = clientY - rect.top - grabDY;
+
+        el.style.left = x + "px";
+        el.style.top  = y + "px";
+    }
+
+    function endPointer() {
+        if (!isDragging) return;
+        isDragging = false;
+
+        // إذا لم يحصل سحب ⇒ اعتبرها تحديد النص
+        if (!moved) {
+            document.querySelectorAll(".draggable-text")
+                .forEach(t => t.style.outline = "none");
+
+            selectedText = el;
+            el.style.outline = "2px dashed red";
+            textInput.value = el.textContent;
+        }
+    }
+
+    // ========== Desktop ==========
+    el.addEventListener("mousedown", (e) => {
+        startPointer(e.clientX, e.clientY);
     });
 
     document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        const rect = canvasContainer.getBoundingClientRect();
-        el.style.left = (e.clientX - rect.left - offsetX) + "px";
-        el.style.top  = (e.clientY - rect.top - offsetY) + "px";
+        movePointer(e.clientX, e.clientY);
     });
 
-    document.addEventListener("mouseup", () => isDragging = false);
+    document.addEventListener("mouseup", endPointer);
 
-    // ==== Touch Events ====
+    // ========== Mobile ==========
     el.addEventListener("touchstart", (e) => {
-        isDragging = true;
-        const touch = e.touches[0];
-        const rect = el.getBoundingClientRect();
-        offsetX = touch.clientX - rect.left;
-        offsetY = touch.clientY - rect.top;
-        e.preventDefault(); // يمنع السحب الافتراضي للصفحة
-    }, { passive: false });
+        const t = e.touches[0];
+        startPointer(t.clientX, t.clientY);
+    });
 
     document.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
-        const touch = e.touches[0];
-        const rect = canvasContainer.getBoundingClientRect();
-        el.style.left = (touch.clientX - rect.left - offsetX) + "px";
-        el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
-        e.preventDefault();
-    }, { passive: false });
+        const t = e.touches[0];
+        movePointer(t.clientX, t.clientY);
+    });
 
-    document.addEventListener("touchend", () => isDragging = false);
+    document.addEventListener("touchend", endPointer);
 }
 
-// ============new update================
+
+
+
+
+
+
+// ============================
+//  TEXT STYLE CONTROLS
+// ============================
+
+
+//========================
+//  TEXT LAYER & ADDING TEXT
+// ============================
+
 
 const fontSize = document.getElementById("fontSize");
 const fontSizeValue = document.getElementById("fontSizeValue");
