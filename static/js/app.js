@@ -210,7 +210,6 @@ function drawImageToCanvas() {
   ctx.drawImage(image, x, y, w, h);
 }
 
-
 //========================
 //  TEXT LAYER & ADDING TEXT
 // ============================
@@ -223,7 +222,7 @@ addTextBtn.addEventListener("click", () => {
 
     // ✅ تحقق إذا لم يتم رفع صورة
     if (!image) {
-        alert("You need to upload an image first !");
+        alert("يرجى رفع صورة أولاً قبل إضافة النص!");
         return;
     }
 
@@ -250,34 +249,48 @@ addTextBtn.addEventListener("click", () => {
 
         applyTextStylesTo(div);
         enableDrag(div);
+        function selectText(div) {
+    // إزالة التحديد عن بقية النصوص
+    document.querySelectorAll(".draggable-text")
+        .forEach(el => el.style.outline = "none");
 
-        // عند الضغط على النص لتعديله
-        div.addEventListener("click", (e) => {
-            e.stopPropagation();
+    selectedText = div;
+    div.style.outline = "2px dashed red";
 
-            // إزالة التحديد عن بقية النصوص
-            document.querySelectorAll(".draggable-text")
-                    .forEach(el => el.style.outline = "none");
+    // عرض النص في الـ input لتعديله
+    textInput.value = div.textContent;
+}
 
-            selectedText = div;
-            div.style.outline = "2px dashed red";
+// ===== Mouse (كمبيوتر) =====
+div.addEventListener("click", (e) => {
+    e.stopPropagation();
+    selectText(div);
+});
 
-            // عرض النص في الـ input لتعديله
-            textInput.value = div.textContent;
-        });
-    }
+// ===== Touch (هاتف) =====
+div.addEventListener("touchstart", (e) => {
+    e.stopPropagation();
+    selectText(div);
+}, { passive: true });
+
+   }
 
     // مسح الحقل بعد الإضافة أو التعديل
     textInput.value = "";
 });
-
-// عند النقر في أي مكان على الصورة أو الـ canvasContainer، يتم إلغاء التحديد
-canvasContainer.addEventListener("click", () => {
+function clearSelection() {
     document.querySelectorAll(".draggable-text")
-            .forEach(el => el.style.outline = "none");
+        .forEach(el => el.style.outline = "none");
+
     selectedText = null;
-    textInput.value = ""; // إفراغ حقل النص لإضافة نص جديد
-});
+    textInput.value = "";
+}
+
+// كمبيوتر
+canvasContainer.addEventListener("click", clearSelection);
+
+// هاتف
+canvasContainer.addEventListener("touchstart", clearSelection);
 
 
 
@@ -288,85 +301,55 @@ canvasContainer.addEventListener("click", () => {
 // ============================
 function enableDrag(el) {
     let isDragging = false;
-    let grabDX = 0, grabDY = 0;
-    let startX = 0, startY = 0;
-    let moved = false;
+    let offsetX = 0, offsetY = 0;
 
-    function startPointer(clientX, clientY) {
+    // ==== TOUCH START ====
+    el.addEventListener("touchstart", (e) => {
+        e.stopPropagation();
         isDragging = true;
-        moved = false;
 
-        startX = clientX;
-        startY = clientY;
-
+        const touch = e.touches[0];
         const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
 
-        grabDX = clientX - cx;
-        grabDY = clientY - cy;
-    }
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+    }, { passive: false });
 
-    function movePointer(clientX, clientY) {
+    // ==== TOUCH MOVE ====
+    document.addEventListener("touchmove", (e) => {
         if (!isDragging) return;
 
-        // إذا كان التحرك بسيطًا لا نعتبره سحبًا بل ضغط فقط
-        if (!moved && (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3)) {
-            moved = true;
-        }
-
-        if (!moved) return;
-
+        const touch = e.touches[0];
         const rect = canvasContainer.getBoundingClientRect();
-        const x = clientX - rect.left - grabDX;
-        const y = clientY - rect.top - grabDY;
 
-        el.style.left = x + "px";
-        el.style.top  = y + "px";
-    }
+        el.style.left = (touch.clientX - rect.left - offsetX) + "px";
+        el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
 
-    function endPointer() {
-        if (!isDragging) return;
+        e.preventDefault(); // 🚫 يمنع Scroll الصفحة
+    }, { passive: false });
+
+    // ==== TOUCH END ====
+    document.addEventListener("touchend", () => {
         isDragging = false;
+    });
 
-        // إذا لم يحصل سحب ⇒ اعتبرها تحديد النص
-        if (!moved) {
-            document.querySelectorAll(".draggable-text")
-                .forEach(t => t.style.outline = "none");
-
-            selectedText = el;
-            el.style.outline = "2px dashed red";
-            textInput.value = el.textContent;
-        }
-    }
-
-    // ========== Desktop ==========
+    // ==== MOUSE (كمبيوتر) ====
     el.addEventListener("mousedown", (e) => {
-        startPointer(e.clientX, e.clientY);
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
     });
 
     document.addEventListener("mousemove", (e) => {
-        movePointer(e.clientX, e.clientY);
+        if (!isDragging) return;
+
+        const rect = canvasContainer.getBoundingClientRect();
+        el.style.left = (e.clientX - rect.left - offsetX) + "px";
+        el.style.top  = (e.clientY - rect.top - offsetY) + "px";
     });
 
-    document.addEventListener("mouseup", endPointer);
-
-    // ========== Mobile ==========
-    el.addEventListener("touchstart", (e) => {
-        const t = e.touches[0];
-        startPointer(t.clientX, t.clientY);
-    });
-
-    document.addEventListener("touchmove", (e) => {
-        const t = e.touches[0];
-        movePointer(t.clientX, t.clientY);
-    });
-
-    document.addEventListener("touchend", endPointer);
+    document.addEventListener("mouseup", () => isDragging = false);
 }
-
-
-
 
 
 
