@@ -18,35 +18,78 @@ document.getElementById("shareBtn").addEventListener("click", () => {
 });
 
 
-//COPY LINK BUTTON
-    // ============================
+// //COPY LINK BUTTON
+//     // ============================
+// document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+//     const imageUrl = await uploadMemeToServer();
+//     if (!imageUrl) return;
+
+//     try {
+//         // الطريقة الحديثة (تعمل فقط على HTTPS)
+//         if (navigator.clipboard && window.isSecureContext) {
+//             await navigator.clipboard.writeText(imageUrl);
+//             showNotification("Link copied!");
+//             return;
+//         }
+
+//         // Fallback للمتصفحات القديمة / HTTP
+//         const tempInput = document.createElement("input");
+//         tempInput.value = imageUrl;
+//         document.body.appendChild(tempInput);
+//         tempInput.select();
+//         document.execCommand("copy");
+//         tempInput.remove();
+
+//         showNotification("Link copied!");
+        
+//     } catch (err) {
+//         console.error("Copy failed:", err);
+//         alert("Failed to copy link.");
+//     }
+// });
+
+// COPY LINK BUTTON
+// ============================
 document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+
     const imageUrl = await uploadMemeToServer();
     if (!imageUrl) return;
 
+    // الطريقة الحديثة (HTTPS + أذونات)
     try {
-        // الطريقة الحديثة (تعمل فقط على HTTPS)
-        if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(imageUrl);
-            showNotification("Link copied!");
-            return;
-        }
+        await navigator.clipboard.writeText(imageUrl);
+        showNotification("Link copied!");
+        return;
+    } catch (err) {
+        console.warn("Clipboard API failed, using fallback...", err);
+    }
 
-        // Fallback للمتصفحات القديمة / HTTP
+    // Fallback — يعمل على HTTP والمتصفحات القديمة
+    try {
         const tempInput = document.createElement("input");
         tempInput.value = imageUrl;
         document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand("copy");
-        tempInput.remove();
 
-        showNotification("Link copied!");
-        
-    } catch (err) {
-        console.error("Copy failed:", err);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999);
+
+        const result = document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        if (result) {
+            showNotification("Link copied!");
+        } else {
+            alert("Failed to copy link.");
+        }
+
+    } catch {
         alert("Failed to copy link.");
     }
 });
+
+
+
+
 
 // زر استخدام صورة نموذجية
 const sampleImageBtn = document.getElementById("sampleImageBtn");
