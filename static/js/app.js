@@ -355,81 +355,79 @@ canvasContainer.addEventListener("touchstart", clearSelection);
 // ============================
 //  DRAGGING TEXT - IMPROVED VERSION
 // ============================
+
 function enableDrag(el) {
     let isDragging = false;
     let offsetX = 0, offsetY = 0;
 
-    // ==== TOUCH START (هاتف) ====
-    el.addEventListener("touchstart", (e) => {
-        e.stopPropagation();
-        isDragging = true;
-
-        const touch = e.touches[0];
-        const rect = el.getBoundingClientRect();
-        const containerRect = canvasContainer.getBoundingClientRect();
-
-        // حساب الإزاحة من نقطة الضغط داخل العنصر
-        offsetX = touch.clientX - rect.left;
-        offsetY = touch.clientY - rect.top;
-
-        // تحديث الموضع بناءً على الإزاحة المحسوبة
-        el.style.left = (touch.clientX - containerRect.left - offsetX) + "px";
-        el.style.top  = (touch.clientY - containerRect.top - offsetY) + "px";
-
-    }, { passive: false });
-
-    // ==== TOUCH MOVE ====
-    document.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
-
-        const touch = e.touches[0];
-        const containerRect = canvasContainer.getBoundingClientRect();
-
-        el.style.left = (touch.clientX - containerRect.left - offsetX) + "px";
-        el.style.top  = (touch.clientY - containerRect.top - offsetY) + "px";
-
-        e.preventDefault();
-    }, { passive: false });
-
-    // ==== TOUCH END ====
-    document.addEventListener("touchend", () => {
-        isDragging = false;
-    });
-
-    // ==== MOUSE (كمبيوتر) - IMPROVED ====
+    // ==== MOUSE DOWN (كمبيوتر) ====
     el.addEventListener("mousedown", (e) => {
         isDragging = true;
         
-        const containerRect = canvasContainer.getBoundingClientRect();
-        const rect = el.getBoundingClientRect();
+        // تحديد النص أولاً
+        selectText(el);
         
-        // حساب الإزاحة الصحيحة
+        // حساب الإزاحة من نقطة الضغط داخل النص
+        const rect = el.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
         
-        // تحديث الموضع فوراً
-        el.style.left = (e.clientX - containerRect.left - offsetX) + "px";
-        el.style.top  = (e.clientY - containerRect.top - offsetY) + "px";
+        e.stopPropagation();
+        e.preventDefault(); // لمنع اختيار النص
+    });
+
+    // ==== TOUCH START (هاتف) ====
+    el.addEventListener("touchstart", (e) => {
+        if (e.touches.length !== 1) return;
+        
+        isDragging = true;
+        const touch = e.touches[0];
+        
+        // تحديد النص أولاً
+        selectText(el);
+        
+        // حساب الإزاحة من نقطة الضغط داخل النص
+        const rect = el.getBoundingClientRect();
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
         
         e.stopPropagation();
-    });
+    }, { passive: true });
 
+    // ==== MOUSE MOVE ====
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-
+        
         const containerRect = canvasContainer.getBoundingClientRect();
+        
+        // حساب الموضع الجديد بناءً على الإزاحة
         el.style.left = (e.clientX - containerRect.left - offsetX) + "px";
-        el.style.top  = (e.clientY - containerRect.top - offsetY) + "px";
+        el.style.top = (e.clientY - containerRect.top - offsetY) + "px";
     });
 
-    document.addEventListener("mouseup", () => {
+    // ==== TOUCH MOVE ====
+    document.addEventListener("touchmove", (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        
+        const touch = e.touches[0];
+        const containerRect = canvasContainer.getBoundingClientRect();
+        
+        // حساب الموضع الجديد
+        el.style.left = (touch.clientX - containerRect.left - offsetX) + "px";
+        el.style.top = (touch.clientY - containerRect.top - offsetY) + "px";
+        
+        e.preventDefault(); // لمنع scroll الصفحة
+    }, { passive: false });
+
+    // ==== STOP DRAGGING ====
+    const stopDragging = () => {
         isDragging = false;
-    });
+    };
     
-    // منع سلوك السحب الافتراضي للصور والنصوص
-    el.addEventListener("dragstart", (e) => e.preventDefault());
+    document.addEventListener("mouseup", stopDragging);
+    document.addEventListener("touchend", stopDragging);
+    document.addEventListener("touchcancel", stopDragging);
 }
-
 //========================
 //  TEXT LAYER & ADDING TEXT
 // ============================
