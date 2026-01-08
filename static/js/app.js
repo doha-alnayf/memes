@@ -145,7 +145,7 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
     
     // عرض الرسالة المناسبة
     if (success) {
-        showNotification("تم نسخ رابط الصورة!");
+        alert("تم نسخ رابط الصورة!");
     } else {
         alert("فشل نسخ الرابط");
     }
