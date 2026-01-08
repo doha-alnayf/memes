@@ -296,23 +296,86 @@ canvasContainer.addEventListener("touchstart", clearSelection);
 
 
 
+// // ============================
+// //  DRAGGING TEXT
+// // ============================
+// function enableDrag(el) {
+//     let isDragging = false;
+//     let offsetX = 0, offsetY = 0;
+
+//     // ==== TOUCH START ====
+//     el.addEventListener("touchstart", (e) => {
+//         e.stopPropagation();
+//         isDragging = true;
+
+//         const touch = e.touches[0];
+//         const rect = el.getBoundingClientRect();
+
+//         offsetX = touch.clientX - rect.left;
+//         offsetY = touch.clientY - rect.top;
+//     }, { passive: false });
+
+//     // ==== TOUCH MOVE ====
+//     document.addEventListener("touchmove", (e) => {
+//         if (!isDragging) return;
+
+//         const touch = e.touches[0];
+//         const rect = canvasContainer.getBoundingClientRect();
+
+//         el.style.left = (touch.clientX - rect.left - offsetX) + "px";
+//         el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
+
+//         e.preventDefault(); // 🚫 يمنع Scroll الصفحة
+//     }, { passive: false });
+
+//     // ==== TOUCH END ====
+//     document.addEventListener("touchend", () => {
+//         isDragging = false;
+//     });
+
+//     // ==== MOUSE (كمبيوتر) ====
+//     el.addEventListener("mousedown", (e) => {
+//         isDragging = true;
+//         offsetX = e.offsetX;
+//         offsetY = e.offsetY;
+//     });
+
+//     document.addEventListener("mousemove", (e) => {
+//         if (!isDragging) return;
+
+//         const rect = canvasContainer.getBoundingClientRect();
+//         el.style.left = (e.clientX - rect.left - offsetX) + "px";
+//         el.style.top  = (e.clientY - rect.top - offsetY) + "px";
+//     });
+
+//     document.addEventListener("mouseup", () => isDragging = false);
+// }
+
+
 // ============================
-//  DRAGGING TEXT
+//  DRAGGING TEXT - IMPROVED VERSION
 // ============================
 function enableDrag(el) {
     let isDragging = false;
     let offsetX = 0, offsetY = 0;
 
-    // ==== TOUCH START ====
+    // ==== TOUCH START (هاتف) ====
     el.addEventListener("touchstart", (e) => {
         e.stopPropagation();
         isDragging = true;
 
         const touch = e.touches[0];
         const rect = el.getBoundingClientRect();
+        const containerRect = canvasContainer.getBoundingClientRect();
 
+        // حساب الإزاحة من نقطة الضغط داخل العنصر
         offsetX = touch.clientX - rect.left;
         offsetY = touch.clientY - rect.top;
+
+        // تحديث الموضع بناءً على الإزاحة المحسوبة
+        el.style.left = (touch.clientX - containerRect.left - offsetX) + "px";
+        el.style.top  = (touch.clientY - containerRect.top - offsetY) + "px";
+
     }, { passive: false });
 
     // ==== TOUCH MOVE ====
@@ -320,12 +383,12 @@ function enableDrag(el) {
         if (!isDragging) return;
 
         const touch = e.touches[0];
-        const rect = canvasContainer.getBoundingClientRect();
+        const containerRect = canvasContainer.getBoundingClientRect();
 
-        el.style.left = (touch.clientX - rect.left - offsetX) + "px";
-        el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
+        el.style.left = (touch.clientX - containerRect.left - offsetX) + "px";
+        el.style.top  = (touch.clientY - containerRect.top - offsetY) + "px";
 
-        e.preventDefault(); // 🚫 يمنع Scroll الصفحة
+        e.preventDefault();
     }, { passive: false });
 
     // ==== TOUCH END ====
@@ -333,31 +396,39 @@ function enableDrag(el) {
         isDragging = false;
     });
 
-    // ==== MOUSE (كمبيوتر) ====
+    // ==== MOUSE (كمبيوتر) - IMPROVED ====
     el.addEventListener("mousedown", (e) => {
         isDragging = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
+        
+        const containerRect = canvasContainer.getBoundingClientRect();
+        const rect = el.getBoundingClientRect();
+        
+        // حساب الإزاحة الصحيحة
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        // تحديث الموضع فوراً
+        el.style.left = (e.clientX - containerRect.left - offsetX) + "px";
+        el.style.top  = (e.clientY - containerRect.top - offsetY) + "px";
+        
+        e.stopPropagation();
     });
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
 
-        const rect = canvasContainer.getBoundingClientRect();
-        el.style.left = (e.clientX - rect.left - offsetX) + "px";
-        el.style.top  = (e.clientY - rect.top - offsetY) + "px";
+        const containerRect = canvasContainer.getBoundingClientRect();
+        el.style.left = (e.clientX - containerRect.left - offsetX) + "px";
+        el.style.top  = (e.clientY - containerRect.top - offsetY) + "px";
     });
 
-    document.addEventListener("mouseup", () => isDragging = false);
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+    
+    // منع سلوك السحب الافتراضي للصور والنصوص
+    el.addEventListener("dragstart", (e) => e.preventDefault());
 }
-
-
-
-
-// ============================
-//  TEXT STYLE CONTROLS
-// ============================
-
 
 //========================
 //  TEXT LAYER & ADDING TEXT
