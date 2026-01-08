@@ -83,19 +83,72 @@ document.getElementById("shareBtn").addEventListener("click", () => {
 //     }
 // });
 
+//////////////////////////////////////
+// //COPY LINK BUTTON
+//     // ============================
+//     document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+//         const imageUrl = await uploadMemeToServer();
+//         if (!imageUrl) return;
 
-//COPY LINK BUTTON
-    // ============================
-    document.getElementById("copyLinkBtn").addEventListener("click", async () => {
-        const imageUrl = await uploadMemeToServer();
-        if (!imageUrl) return;
+//         try {
+//             await navigator.clipboard.writeText(imageUrl);
+//             showNotification("تم نسخ رابط الصورة!");
+//         } catch {
+//             alert("فشل نسخ الرابط");
+//         }
+// });
 
-        try {
-            await navigator.clipboard.writeText(imageUrl);
-            showNotification("تم نسخ رابط الصورة!");
-        } catch {
-            alert("فشل نسخ الرابط");
+
+//COPY LINK BUTTON - الحل المؤكد
+// ============================
+document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+    const imageUrl = await uploadMemeToServer();
+    if (!imageUrl) {
+        alert("لا يوجد رابط للنسخ");
+        return;
+    }
+
+    // دالة النسخ المحسنة
+    function copyTextToClipboard(text) {
+        // الطريقة 1: Clipboard API
+        if (navigator.clipboard) {
+            return navigator.clipboard.writeText(text)
+                .then(() => true)
+                .catch(() => false);
         }
+        
+        // الطريقة 2: الطريقة القديمة
+        return new Promise((resolve) => {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.cssText = `
+                    position: fixed;
+                    left: -9999px;
+                    top: -9999px;
+                `;
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                const success = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                resolve(success);
+            } catch {
+                resolve(false);
+            }
+        });
+    }
+    
+    // محاولة النسخ
+    const success = await copyTextToClipboard(imageUrl);
+    
+    // عرض الرسالة المناسبة
+    if (success) {
+        showNotification("تم نسخ رابط الصورة!");
+    } else {
+        alert("فشل نسخ الرابط");
+    }
 });
 
 
@@ -292,64 +345,6 @@ canvasContainer.addEventListener("click", clearSelection);
 // هاتف
 canvasContainer.addEventListener("touchstart", clearSelection);
 
-
-
-
-
-// // ============================
-// //  DRAGGING TEXT
-// // ============================
-// function enableDrag(el) {
-//     let isDragging = false;
-//     let offsetX = 0, offsetY = 0;
-
-//     // ==== TOUCH START ====
-//     el.addEventListener("touchstart", (e) => {
-//         e.stopPropagation();
-//         isDragging = true;
-
-//         const touch = e.touches[0];
-//         const rect = el.getBoundingClientRect();
-
-//         offsetX = touch.clientX - rect.left;
-//         offsetY = touch.clientY - rect.top;
-//     }, { passive: false });
-
-//     // ==== TOUCH MOVE ====
-//     document.addEventListener("touchmove", (e) => {
-//         if (!isDragging) return;
-
-//         const touch = e.touches[0];
-//         const rect = canvasContainer.getBoundingClientRect();
-
-//         el.style.left = (touch.clientX - rect.left - offsetX) + "px";
-//         el.style.top  = (touch.clientY - rect.top - offsetY) + "px";
-
-//         e.preventDefault(); // 🚫 يمنع Scroll الصفحة
-//     }, { passive: false });
-
-//     // ==== TOUCH END ====
-//     document.addEventListener("touchend", () => {
-//         isDragging = false;
-//     });
-
-//     // ==== MOUSE (كمبيوتر) ====
-//     el.addEventListener("mousedown", (e) => {
-//         isDragging = true;
-//         offsetX = e.offsetX;
-//         offsetY = e.offsetY;
-//     });
-
-//     document.addEventListener("mousemove", (e) => {
-//         if (!isDragging) return;
-
-//         const rect = canvasContainer.getBoundingClientRect();
-//         el.style.left = (e.clientX - rect.left - offsetX) + "px";
-//         el.style.top  = (e.clientY - rect.top - offsetY) + "px";
-//     });
-
-//     document.addEventListener("mouseup", () => isDragging = false);
-// }
 
 
 // ============================
